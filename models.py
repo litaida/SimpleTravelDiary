@@ -9,8 +9,7 @@ from utils.sqlopt import Base
 class TravelLocation(Base):
     """旅行日记 - 地图标注页"""
     __tablename__ = 'travel_location'
-    loc_id = Column(Integer, primary_key=True, autoincrement=True)
-    province = Column(String(30))
+    province = Column(String(10), primary_key=True)
     longitude = Column(Float())
     latitude = Column(Float())
     note = Column(String(30), nullable=True)
