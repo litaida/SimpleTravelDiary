@@ -24,5 +24,5 @@ engine = create_engine(db_url, encoding='utf-8', echo=True)
 Base = declarative_base(bind=engine)
 
 # Session Object
-# Session = sessionmaker(bind=engine)
-# session = Session()
+# SessionPool = sessionmaker(bind=engine)
+# session = SessionPool()

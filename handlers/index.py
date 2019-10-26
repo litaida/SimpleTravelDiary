@@ -6,4 +6,5 @@ class IndexHandler(RequestHandler):
     """
     网站首页 - 个人简历
     """
-    pass
+    def get(self):
+        self.render('index.html')

@@ -6,9 +6,9 @@ from sqlalchemy import Column, Integer, String, DateTime, Float
 from utils.sqlopt import Base
 
 
-class Location(Base):
+class TravelLocation(Base):
     """旅行日记 - 地图标注页"""
-    __tablename__ = 'location'
+    __tablename__ = 'travel_location'
     loc_id = Column(Integer, primary_key=True, autoincrement=True)
     province = Column(String(30))
     longitude = Column(Float())

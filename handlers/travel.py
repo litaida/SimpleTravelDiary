@@ -6,4 +6,5 @@ class MapHandler(RequestHandler):
     """
     旅行日记 - 地图标注
     """
-    pass
+    def get(self):
+        self.render('travel.html')
