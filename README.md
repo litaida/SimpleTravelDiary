@@ -1,2 +1,2 @@
 # SimpleTravelDiary
-SimpleTravelDiary = Tornado + jQuery + SQLAlchemy + MapAPI
+ SimpleTravelDiary = Tornado + jQuery + SQLAlchemy + MapAPI 
