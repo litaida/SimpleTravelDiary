@@ -17,7 +17,6 @@ option = {
             if(province in cache_dict){
                 return cache_dict[province]
             }else{
-                console.log('写入 cache_dict');
                 cache_dict[province] = 'Province<br>' + obj.name;
                 return cache_dict[province]
             }
@@ -42,10 +41,43 @@ option = {
 };
 
 myChart.setOption(option);
-myChart.on('click', function (params) {
-    refresh(this)
+// 当鼠标移动到省份上时, 绑定模态框对象
+myChart.on('mouseover', function (province_obj) {
+    /* 建立模态框对象 */
+	let modalBox = {};
+	/* 获取模态框 */
+	modalBox.modal = document.getElementById('myModal');
+    /* 按下省份即为trigger */
+	modalBox.triggerBtn = this._dom;
+    /* 获得关闭按钮 */
+	modalBox.closeBtn = document.getElementById('closeBtn');
+	/* 模态框显示 */
+	modalBox.show = function() {
+	    console.log($(this.modal));
+		this.modal.style.display = 'block';
+	};
+	/* 模态框关闭 */
+	modalBox.close = function() {
+		this.modal.style.display = 'none';
+	};
+	/* 当用户点击模态框内容之外的区域，模态框也会关闭 */
+	modalBox.outsideClick = function() {
+		let modal = this.modal;
+		window.onclick = function(event) {
+            if(event.target === modal) {
+            	modal.style.display = 'none';
+            }
+		}
+	};
+    /* 模态框初始化 */
+	modalBox.init = function() {
+		this.triggerBtn.onclick = function() {
+            modalBox.show();
+		};
+		this.closeBtn.onclick = function() {
+			modalBox.close();
+		};
+		this.outsideClick();
+	};
+	modalBox.init();
 });
-
-function refresh(){
-    alert('You Clicked')
-}

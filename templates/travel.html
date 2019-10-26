@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>旅行日记 - 地图标注</title>
     <link rel="stylesheet" type="text/css" href="/static/travel.css">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
     <script src="https://cdn.bootcss.com/echarts/4.3.0-rc.2/echarts.js"></script>
     <script type="text/javascript" src="https://www.echartsjs.com/examples/vendors/echarts/map/js/china.js"></script>
     <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=QoTlpIgAAFGfgb7uV2xtrGkpeQUpr1h4"></script>
@@ -12,62 +13,20 @@
 <body>
     <h1>Hello, Map Marker!</h1>
     <div id="china-map"></div>
+    <!-- 模态框触发按钮 -->
+    <button id="triggerBtn">模态框</button>
     <!-- 详情模态框 - 开始 -->
-    <div class="modal fade" id="map-mark" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document" style="width: 80%;">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="user-view">{{ platform }} - 最近{{ period }}{{ status }}客户详细信息</h4>
-                </div>
-
-                <div class="modal-body no-padding">
-                    <div class="ibox-content">
-                        <div class="table-responsive">
-                            <table class="footable table table-striped table-bordered table-hover dataTables-example" data-page-size="5" data-limit-navigation="5">
-                            <thead>
-                                <tr>
-                                    <th>电邮</th>
-                                    <th>当前状态</th>
-                                    <th>试用/订阅开始时间</th>
-                                    <th>试用/订阅结束时间</th>
-                                    <th>取消订阅时间</th>
-                                    <th>累计付费</th>
-                                    <th>最近登陆时间</th>
-                                    <th>注册时间</th>
-                                </tr>
-                            </thead>
-                            <tbody class="row">
-                                {% for info_dict in info_dict.detail %}
-                                <tr>
-                                    <td class="col-xs-1">{{ info_dict.email }}</td>
-                                    <td class="col-xs-1">{{ info_dict.status }}</td>
-                                    <td class="col-xs-2">{{ info_dict.period_start }}</td>
-                                    <td class="col-xs-2">{{ info_dict.period_end }}</td>
-                                    <td class="col-xs-1">{{ info_dict.cancelled_date }}</td>
-                                    <td class="col-xs-1">{{ info_dict.total_payed }}</td>
-                                    <td class="col-xs-2">{{ info_dict.last_login }}</td>
-                                    <td class="col-xs-2">{{ info_dict.reg_date }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="10">
-                                        <ul class="pagination no-margins" style="float: right;"></ul>
-                                    </td>
-                                </tr>
-                            </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>头部</h2>
+                <span id="closeBtn" class="close">×</span>
+            </div>
+            <div class="modal-body">
+                <p>这是一个模态框</p>
+            </div>
+            <div class="modal-footer">
+                <h3>尾部</h3>
             </div>
         </div>
     </div>
