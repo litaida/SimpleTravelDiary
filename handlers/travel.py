@@ -2,7 +2,7 @@
 import json
 from traceback import format_exc
 from tornado.web import RequestHandler
-from models import TravelLocation, create_travel_location
+from models import TravelLocation, create_note, delete_note
 
 
 class MapHandler(RequestHandler):
@@ -38,22 +38,27 @@ class MapHandler(RequestHandler):
     def post(self):
         """新增某个省份的旅行标注"""
         post_data = self.request.body_arguments
-        province_data = {x: post_data.get(x)[0].decode('UTF-8')
+        post_data = {x: post_data.get(x)[0].decode('UTF-8')
                          for x in post_data.keys()}
-        print('>>> 进入了 POST, 参数: %s' % str(province_data))
+        print('>>> 进入了 POST, 参数: %s' % str(post_data))
         # 接收到相关数据后, 进行写库操作
         try:
-            province = province_data.get('province')
-            note = province_data.get('note')
+            option = post_data.get('method')
+            province = post_data.get('province')
             if not province:
                 msg = '标注不成功, 主键缺失: %s' % str(province)
                 self.finish({'status': 400, 'message': msg})
-            # 检查存在性
-            beingness = TravelLocation.get_by_province(province)
-            if beingness:
-                self.finish({'status': 403, 'message': '已存在'})
-            create_travel_location(province, note)
-            print({'status': 200, 'message': '新增成功'})
+                return
+            if option == 'DELETE':
+                delete_note(province)
+            else:
+                note = post_data.get('note')
+                # 检查存在性
+                beingness = TravelLocation.get_by_province(province)
+                if beingness:
+                    self.finish({'status': 403, 'message': '已存在'})
+                create_note(province, note)
+                print({'status': 200, 'message': '新增成功'})
             self.render('travel.html')
         except:
             print(format_exc())

@@ -42,13 +42,13 @@ option = {
         name: '数据',
         type: 'map',
         mapType: 'china',
-        roam: true,
+        roam: false,
         label: {
             normal: {
                 show: true  //省份名称
             },
             emphasis: {
-                show: false
+                show: true
             }
         },
     }]
@@ -56,7 +56,7 @@ option = {
 
 myChart.setOption(option);
 // 当鼠标移动到省份上时, 绑定模态框对象
-myChart.on('mouseover', function (province_obj) {
+myChart.on('click', function (province_obj) {
     /* 建立模态框对象 */
 	let modalBox = {};
 	/* 获取模态框 */
@@ -75,10 +75,13 @@ myChart.on('mouseover', function (province_obj) {
             $.get('/travel?Province=' + province, function (data) {
                 let msg = JSON.parse(data['message']);
                 content.html(
-                    '<form action="/travel" method="PUT">\n' +
+                    '<form action="/travel" method="POST">\n' +
+                    '<input type="hidden" name="province" value="' + province +'"/>\n' +
+                    '<input type="hidden" name="method" value="DELETE"/>\n' +
                     '省份 <input type="text" name="province" value="' + msg['province'] +'" disabled/>\n' +
                     '旅行计划内容: <input type="text" name="note" value="' + msg['note'] +'" disabled/>\n' +
                     '创建时间: <input type="text" name="createtime" value="' + msg['created_at'] +'" disabled/>\n' +
+                    '<input type="submit" value="清空" />\n' +
                     '</form>'
                 );
             });

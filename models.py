@@ -28,13 +28,13 @@ class TravelLocation(Base):
         return session.query(cls).filter_by(province=province).all()
 
 
-def create_travel_location(provice, note):
+def create_note(provice, note):
     """增"""
     session.add(TravelLocation(province=provice, note=note))
     session.commit()
 
 
-def delete_travel_location(province):
+def delete_note(province):
     """删"""
     row = session.query(TravelLocation).filter_by(province=province)
     if row:
