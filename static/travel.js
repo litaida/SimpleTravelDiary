@@ -14,10 +14,24 @@ option = {
         formatter: function (obj) {
             let province = obj.name;
             /* 请求后台数据库的对应记录, 之后记录到 cache_dict */
-            if(province in cache_dict){
+            if (province in cache_dict) {
                 return cache_dict[province]
-            }else{
-                cache_dict[province] = JSON.stringify({Province: obj.name});
+            } else {
+                $.get('/travel?Province=' + province, function (data) {
+                    if(data['status'] === 200){
+                        /* 查询到了 */
+                        let data_dict = JSON.parse(data['message']);
+                        let cache = {
+                            'Province': province,
+                            'Create Time': data_dict['created_at'],
+                            'Note': data_dict['note']
+                        };
+                        cache_dict[province] = JSON.stringify(cache);
+                    } else {
+                        /* 没查询到 */
+                        cache_dict[province] = JSON.stringify({'Province': province})
+                    }
+                });
                 return cache_dict[province]
             }
         }
@@ -53,12 +67,31 @@ myChart.on('mouseover', function (province_obj) {
 	modalBox.closeBtn = document.getElementById('closeBtn');
 	/* 模态框显示 */
 	modalBox.show = function() {
-	    /* 展示模态框时, 请求对应省份的计划数据 */
+	    /* 展示模态框时, 展示对应省份的旅行计划, 若没有, 则展示编辑框 */
 	    let province_data = JSON.parse(this.triggerBtn.textContent);
-	    $.post('/travel', province_data, function (data) {
-	        console.log(data);
-    	    $('#content').html('<p>' + String(data['message']) + '</p>');
-        });
+        let province = province_data['Province'];
+	    let content = $('#content');
+	    if ('Note' in province_data) {
+            $.get('/travel?Province=' + province, function (data) {
+                let msg = JSON.parse(data['message']);
+                content.html(
+                    '<form action="/travel" method="PUT">\n' +
+                    '省份 <input type="text" name="province" value="' + msg['province'] +'" disabled/>\n' +
+                    '旅行计划内容: <input type="text" name="note" value="' + msg['note'] +'" disabled/>\n' +
+                    '创建时间: <input type="text" name="createtime" value="' + msg['created_at'] +'" disabled/>\n' +
+                    '</form>'
+                );
+            });
+	    } else {
+            content.html(
+                '<form action="/travel" method="POST">\n' +
+                '<input type="hidden" name="province" value="' + province +'"/>\n' +
+                '省份: <input type="text" name="province_d" value="' + province +'" disabled/>\n' +
+                '旅行计划内容: <input type="text" name="note" />\n' +
+                '<input type="submit" value="提交" />\n' +
+                '</form>'
+            )
+	    }
 		this.modal.style.display = 'block';
 	};
 	/* 模态框关闭 */

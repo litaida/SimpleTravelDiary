@@ -1,7 +1,8 @@
 # 旅行日记页逻辑
 import json
+from traceback import format_exc
 from tornado.web import RequestHandler
-from models import TravelLocation
+from models import TravelLocation, create_travel_location
 
 
 class MapHandler(RequestHandler):
@@ -9,32 +10,51 @@ class MapHandler(RequestHandler):
     旅行日记 - 地图标注
     """
     def get(self):
-        """直接访问页面"""
-        self.render('travel.html')
+        """直接访问页面 或 传入省份以查询对应的旅行标注"""
+        province = self.get_query_argument('Province', None)
+        print('>>> 进入 GET, 参数: %s' % ('Province = ' + str(province)))
+        if province:
+            # 接收到省份之后, 查询数据库是否存在对应的标注
+            province_note = TravelLocation.get_by_province(province)
+            if province_note:
+                row = province_note[0]
+                status_code = 200
+                message = {
+                    'province': row.province,
+                    'note': row.note,
+                    'created_at': row.created_at.strftime('%Y-%m-%d %H:%M:%S')
+                }
+            else:
+                status_code = 404
+                message = dict()
+            p = {
+                'status': status_code,
+                'message': json.dumps(message, ensure_ascii=False)
+            }
+            self.finish(p)
+        else:
+            self.render('travel.html')
 
     def post(self):
-        """查询某个省份的旅行标注"""
-        if self.request.body_arguments:
-            post_data = self.request.body_arguments
-            province_data = {x: post_data.get(x)[0].decode('UTF-8')
-                             for x in post_data.keys()}
-        else:
-            post_data = self.request.body.decode('UTF-8')
-            province_data = json.load(post_data)
-        # 接收到省份之后, 查询数据库是否存在对应的标注
-        province = province_data.get('Province')
-        if not province:
-            self.finish({'message': '参数错误, 没有传入省份'})
-        province_note = TravelLocation.get_by_province(province)
-        print('pn = %s, type = %s' % (str(province_note), type(province_note)))
-        if province_note:
-            message = str(province_note[0])
-            print('返回的数据是: %s' % message)
-            self.finish({'message': message})
-        else:
-            print('返回的数据是: %s' % province)
-            self.finish({'message': '参数正确, 省份为: %s' % province})
-
-    def put(self):
         """新增某个省份的旅行标注"""
-        self.finish({'message': '新增成功'})
+        post_data = self.request.body_arguments
+        province_data = {x: post_data.get(x)[0].decode('UTF-8')
+                         for x in post_data.keys()}
+        print('>>> 进入了 POST, 参数: %s' % str(province_data))
+        # 接收到相关数据后, 进行写库操作
+        try:
+            province = province_data.get('province')
+            note = province_data.get('note')
+            if not province:
+                msg = '标注不成功, 主键缺失: %s' % str(province)
+                self.finish({'status': 400, 'message': msg})
+            # 检查存在性
+            beingness = TravelLocation.get_by_province(province)
+            if beingness:
+                self.finish({'status': 403, 'message': '已存在'})
+            create_travel_location(province, note)
+            print({'status': 200, 'message': '新增成功'})
+            self.render('travel.html')
+        except:
+            print(format_exc())
+            self.finish({'status': 500, 'message': '服务器出现错误'})

@@ -28,5 +28,23 @@ class TravelLocation(Base):
         return session.query(cls).filter_by(province=province).all()
 
 
+def create_travel_location(provice, note):
+    """增"""
+    session.add(TravelLocation(province=provice, note=note))
+    session.commit()
+
+
+def delete_travel_location(province):
+    """删"""
+    row = session.query(TravelLocation).filter_by(province=province)
+    if row:
+        row = row[0]
+        print('Deleting Row From TravelLocation: %s' % str(row))
+        session.delete(row)
+        session.commit()
+    else:
+        print('Province: %s does not exist, Affected 0 Row(s)' % province)
+
+
 if __name__ == '__main__':
     Base.metadata.create_all()
