@@ -15,7 +15,7 @@ class TravelLocation(Base):
     province = Column(String(10), primary_key=True)
     note = Column(String(128), nullable=True)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=None, nullable=True)
     # is_deleted = Column(Boolean, default=0)
 
