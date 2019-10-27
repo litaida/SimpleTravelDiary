@@ -1,8 +1,13 @@
 # Tornado HttpServer
+import sys
 from tornado import web, ioloop, httpserver
 
 from urls import URLS
-from settings import CONFIG
+from settings import CONFIG, BASE_PATH
+
+
+if BASE_PATH not in sys.path:
+    sys.path.insert(0, BASE_PATH)
 
 
 class Application(web.Application):

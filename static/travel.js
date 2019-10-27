@@ -17,7 +17,7 @@ option = {
             if(province in cache_dict){
                 return cache_dict[province]
             }else{
-                cache_dict[province] = 'Province<br>' + obj.name;
+                cache_dict[province] = JSON.stringify({Province: obj.name});
                 return cache_dict[province]
             }
         }
@@ -53,7 +53,12 @@ myChart.on('mouseover', function (province_obj) {
 	modalBox.closeBtn = document.getElementById('closeBtn');
 	/* 模态框显示 */
 	modalBox.show = function() {
-	    console.log($(this.modal));
+	    /* 展示模态框时, 请求对应省份的计划数据 */
+	    let province_data = JSON.parse(this.triggerBtn.textContent);
+	    $.post('/travel', province_data, function (data) {
+	        console.log(data);
+    	    $('#content').html('<p>' + String(data['message']) + '</p>');
+        });
 		this.modal.style.display = 'block';
 	};
 	/* 模态框关闭 */
