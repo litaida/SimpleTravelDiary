@@ -1,4 +1,5 @@
 # 数据库模型
+from traceback import format_exc
 from datetime import datetime
 
 from sqlalchemy import Column, String, DateTime
@@ -30,23 +31,33 @@ class TravelLocation(Base):
 def create_note(provice, note):
     """增"""
     session = SessionPool()
-    session.add(TravelLocation(province=provice, note=note))
-    session.commit()
-    session.close()
+    try:
+        session.add(TravelLocation(province=provice, note=note))
+        session.commit()
+    except:
+        print(format_exc())
+        session.rollback()
+    finally:
+        session.close()
 
 
 def delete_note(province):
     """删"""
     session = SessionPool()
-    row = session.query(TravelLocation).filter_by(province=province)
-    if row:
-        row = row[0]
-        print('Deleting Row From TravelLocation: %s' % str(row))
-        session.delete(row)
-        session.commit()
+    try:
+        row = session.query(TravelLocation).filter_by(province=province)
+        if row:
+            row = row[0]
+            print('Deleting Row From TravelLocation: %s' % str(row))
+            session.delete(row)
+            session.commit()
+        else:
+            print('Province: %s does not exist, Affected 0 Row(s)' % province)
+    except:
+        print(format_exc())
+        session.rollback()
+    finally:
         session.close()
-    else:
-        print('Province: %s does not exist, Affected 0 Row(s)' % province)
 
 
 if __name__ == '__main__':
