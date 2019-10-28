@@ -6,9 +6,6 @@ from sqlalchemy import Column, String, DateTime
 from utils.sqlopt import Base, SessionPool
 
 
-session = SessionPool()
-
-
 class TravelLocation(Base):
     """旅行日记 - 地图标注页"""
     __tablename__ = 'travel_location'
@@ -21,27 +18,33 @@ class TravelLocation(Base):
 
     @classmethod
     def get_all(cls):
+        session = SessionPool()
         return session.query(cls).all()
 
     @classmethod
     def get_by_province(cls, province):
+        session = SessionPool()
         return session.query(cls).filter_by(province=province).all()
 
 
 def create_note(provice, note):
     """增"""
+    session = SessionPool()
     session.add(TravelLocation(province=provice, note=note))
     session.commit()
+    session.close()
 
 
 def delete_note(province):
     """删"""
+    session = SessionPool()
     row = session.query(TravelLocation).filter_by(province=province)
     if row:
         row = row[0]
         print('Deleting Row From TravelLocation: %s' % str(row))
         session.delete(row)
         session.commit()
+        session.close()
     else:
         print('Province: %s does not exist, Affected 0 Row(s)' % province)
 
